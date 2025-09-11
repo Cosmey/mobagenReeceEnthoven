@@ -8,6 +8,7 @@ public:
   ~JohnConway() override = default;
   std::string GetName() override { return "JohnConway"; }
   void Step(World& world) override;
+  bool evaluateCell(World& world,Point2D point);
   int CountNeighbors(World& world, Point2D point);
   GameOfLifeTileSetEnum GetTileSet() override { return GameOfLifeTileSetEnum::Square; };
 };
