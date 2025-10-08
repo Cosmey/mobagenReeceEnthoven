@@ -49,10 +49,15 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   // if the border is not infinity, build the path from border to the cat using the camefrom map
   // if there isnt a reachable border, just return empty vector
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
-  return path;
+
+  std::vector<Point2D> noExitPath;
+  noExitPath.push_back(borderExit);
+  if (!foundEdge) return noExitPath;
+  else return path;
 }
 std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D current, unordered_map<Point2D, bool>* visited,std::unordered_set<Point2D>* frontierSet) {
   std::vector<Point2D> neighbors;
+  //checks for each direction that the point is either out of bounds, or has no wall and has not been visited/added to the frontier
   if (!w->isValidPosition(World::W(current)) || (!w->getContent(World::W(current)) && !visited->contains(World::W(current)) && !frontierSet->contains(World::W(current)))) neighbors.push_back(World::W(current));
   if (!w->isValidPosition(World::E(current)) || (!w->getContent(World::E(current)) && !visited->contains(World::E(current))&& !frontierSet->contains(World::E(current)))) neighbors.push_back(World::E(current));
   if (!w->isValidPosition(World::NW(current)) || (!w->getContent(World::NW(current)) && !visited->contains(World::NW(current))&& !frontierSet->contains(World::NW(current)))) neighbors.push_back(World::NW(current));
