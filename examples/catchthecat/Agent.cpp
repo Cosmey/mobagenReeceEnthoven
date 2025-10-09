@@ -22,7 +22,8 @@ std::vector<Point2D> Agent::generatePath(World* w,std::vector<Point2D> exclusion
   Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
   bool foundEdge = false;
   Point2D current;
-  int distanceTravelled;
+  float distanceTravelled;
+  int numExplored = 0;
 
   while (!priorityFrontier.empty() && !foundEdge) {
     current = priorityFrontier.top().getPoint();
@@ -37,13 +38,15 @@ std::vector<Point2D> Agent::generatePath(World* w,std::vector<Point2D> exclusion
         break;
       }
       cameFrom[neighbors[i]] = current;
-      int neighborTotalDistance = distanceTravelled +1;
+      float neighborTotalDistance = distanceTravelled +1;
       priorityFrontier.push(PriorityPoint(neighbors[i],calculateHeuristic(w,neighbors[i],neighborTotalDistance),neighborTotalDistance));
       frontierSet.emplace(neighbors[i]);
     }
 
-
+    numExplored++;
   }
+
+  std::cout << numExplored << std::endl;
 
   std::vector<Point2D> path;
   Point2D currentPathPoint = current;
@@ -89,8 +92,11 @@ std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D current) {
 
 }
 
-int Agent::calculateHeuristic(World* w, Point2D current,int distanceTravelled) {
-  return -std::max(std::abs(current.x),std::abs(current.y)) + distanceTravelled;
+float Agent::calculateHeuristic(World* w, Point2D current,int distanceTravelled) {
+  float newDistance = distanceTravelled*0.99f;
+  if (distanceTravelled - newDistance >= 1) newDistance = distanceTravelled;
+  float thing = -(float)std::max(std::abs(current.x),std::abs(current.y)) + newDistance;
+  return thing;
 }
 
 
@@ -99,7 +105,7 @@ int Agent::calculateHeuristic(World* w, Point2D current,int distanceTravelled) {
 
 
 
-PriorityPoint::PriorityPoint(Point2D point, int priority,int distanceTravelled) {
+PriorityPoint::PriorityPoint(Point2D point, float priority,int distanceTravelled) {
  this->priority = priority;
   this->point = point;
   this->distanceTravelled = distanceTravelled;

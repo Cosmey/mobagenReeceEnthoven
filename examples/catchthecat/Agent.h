@@ -13,7 +13,7 @@ class World;
 
 class PriorityPoint {
 public:
-  PriorityPoint(Point2D point,int priority,int distanceTravelled);
+  PriorityPoint(Point2D point,float priority,int distanceTravelled);
 
   bool operator<(const PriorityPoint &other) const;
   bool operator>(const PriorityPoint &other) const;
@@ -21,7 +21,7 @@ public:
   int getDistanceTravelled() const {return distanceTravelled;};
 private:
   Point2D point;
-  int priority;
+  float priority;
   int distanceTravelled;
 };
 
@@ -36,7 +36,7 @@ public:
   std::vector<Point2D> generatePath(World* w,std::vector<Point2D> exclusions = std::vector<Point2D>());
   std::vector<Point2D> getVisitableNeighbors(World* w,Point2D current,std::unordered_map<Point2D, bool>* visited,std::unordered_set<Point2D>* frontierSet);
   std::vector<Point2D> getVisitableNeighbors(World* w,Point2D current);
-  int calculateHeuristic(World* w,Point2D current,int distanceTravelled);
+  float calculateHeuristic(World* w,Point2D current,int distanceTravelled);
 };
 
 
