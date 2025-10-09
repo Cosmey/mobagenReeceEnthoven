@@ -3,11 +3,17 @@
 #include <queue>
 #include "World.h"
 using namespace std;
-std::vector<Point2D> Agent::generatePath(World* w) {
+
+
+std::vector<Point2D> Agent::generatePath(World* w,std::vector<Point2D> exclusions) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
   priority_queue<PriorityPoint,std::vector<PriorityPoint>,greater<PriorityPoint>> priorityFrontier;
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
+
+  for (int i = 0;i < exclusions.size();i++) {
+    visited[exclusions[i]] = true;
+  }
 
   // bootstrap state
   auto catPos = w->getCat();
@@ -55,18 +61,34 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   if (!foundEdge) return noExitPath;
   else return path;
 }
-std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D current, unordered_map<Point2D, bool>* visited,std::unordered_set<Point2D>* frontierSet) {
-  std::vector<Point2D> neighbors;
-  //checks for each direction that the point is either out of bounds, or has no wall and has not been visited/added to the frontier
-  if (!w->isValidPosition(World::W(current)) || (!w->getContent(World::W(current)) && !visited->contains(World::W(current)) && !frontierSet->contains(World::W(current)))) neighbors.push_back(World::W(current));
-  if (!w->isValidPosition(World::E(current)) || (!w->getContent(World::E(current)) && !visited->contains(World::E(current))&& !frontierSet->contains(World::E(current)))) neighbors.push_back(World::E(current));
-  if (!w->isValidPosition(World::NW(current)) || (!w->getContent(World::NW(current)) && !visited->contains(World::NW(current))&& !frontierSet->contains(World::NW(current)))) neighbors.push_back(World::NW(current));
-  if (!w->isValidPosition(World::NE(current)) || (!w->getContent(World::NE(current)) && !visited->contains(World::NE(current))&& !frontierSet->contains(World::NE(current)))) neighbors.push_back(World::NE(current));
-  if (!w->isValidPosition(World::SE(current)) || (!w->getContent(World::SE(current)) && !visited->contains(World::SE(current))&& !frontierSet->contains(World::SE(current)))) neighbors.push_back(World::SE(current));
-  if (!w->isValidPosition(World::SW(current)) || (!w->getContent(World::SW(current)) && !visited->contains(World::SW(current))&& !frontierSet->contains(World::SW(current)))) neighbors.push_back(World::SW(current));
+std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D current, unordered_map<Point2D, bool>* visited,
+                                                  std::unordered_set<Point2D>* frontierSet) {
+  std::vector<Point2D> neighbors = w->neighbors(current);
+  std::vector<Point2D> returnedNeighbors;
+  // checks for each direction that the point is either out of bounds, or has no wall and has not been visited/added to the frontier
 
-  return neighbors;
+  for (int i = 0; i < neighbors.size(); i++) {
+    if (!w->isValidPosition(neighbors[i])
+        || (!w->getContent(neighbors[i]) && !visited->contains(neighbors[i]) && !frontierSet->contains(neighbors[i])))
+      returnedNeighbors.push_back(neighbors[i]);
+  }
+
+  return returnedNeighbors;
 }
+std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D current) {
+  std::vector<Point2D> neighbors = w->neighbors(current);
+  std::vector<Point2D> returnedNeighbors;
+  // checks for each direction that the point is either out of bounds, or has no wall and has not been visited/added to the frontier
+
+  for (int i = 0; i < neighbors.size(); i++) {
+    if (!w->isValidPosition(neighbors[i]) || (!w->getContent(neighbors[i])))
+      returnedNeighbors.push_back(neighbors[i]);
+  }
+
+  return returnedNeighbors;
+
+}
+
 int Agent::calculateHeuristic(World* w, Point2D current,int distanceTravelled) {
   return -std::max(std::abs(current.x),std::abs(current.y)) + distanceTravelled;
 }

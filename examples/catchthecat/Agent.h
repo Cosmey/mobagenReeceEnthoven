@@ -33,8 +33,9 @@ public:
 
   virtual Point2D Move(World*) = 0;
 
-  std::vector<Point2D> generatePath(World* w);
+  std::vector<Point2D> generatePath(World* w,std::vector<Point2D> exclusions = std::vector<Point2D>());
   std::vector<Point2D> getVisitableNeighbors(World* w,Point2D current,std::unordered_map<Point2D, bool>* visited,std::unordered_set<Point2D>* frontierSet);
+  std::vector<Point2D> getVisitableNeighbors(World* w,Point2D current);
   int calculateHeuristic(World* w,Point2D current,int distanceTravelled);
 };
 
