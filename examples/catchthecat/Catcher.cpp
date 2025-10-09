@@ -12,7 +12,9 @@ Point2D Catcher::Move(World* world) {
     else return excludedPath[0];
   }
   else if (path[0] == Point2D(INT32_MAX, INT32_MAX)) {
-    return randPointNearCat(world);
+    std::vector<Point2D> neighbors = getVisitableNeighbors(world,world->getCat());
+    auto rand = Random::Range(0, neighbors.size()-1);
+    return neighbors[rand];
   }
   else if (path[0] != world->getCat()) return path[0];
 
